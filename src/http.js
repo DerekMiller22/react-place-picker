@@ -1,4 +1,4 @@
-export default function fetchAvalPlaces(){
+export async function fetchAvalPlaces(){
 const response = await fetch("http://localhost:3000/places");
 const resData = await response.json();
 
