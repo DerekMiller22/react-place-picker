@@ -2,6 +2,7 @@ import { useRef, useState, useCallback } from "react";
 
 import Places from "./components/Places.jsx";
 import Modal from "./components/Modal.jsx";
+import Error from "./components/Error.jsx";
 import DeleteConfirmation from "./components/DeleteConfirmation.jsx";
 import logoImg from "./assets/logo.png";
 import AvailablePlaces from "./components/AvailablePlaces.jsx";
@@ -11,6 +12,7 @@ function App() {
   const selectedPlace = useRef();
 
   const [userPlaces, setUserPlaces] = useState([]);
+  const [errorPlaces, setErrorPlaces] = useState();
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
@@ -37,7 +39,8 @@ function App() {
     try {
       await updateUserPlaces([selectedPlace, ...userPlaces]);
     } catch (error) {
-      // ...
+      setUserPlaces(userPlaces);
+      setErrorPlaces({ message: error.message || "Error" });
     }
   }
 
@@ -49,8 +52,21 @@ function App() {
     setModalIsOpen(false);
   }, []);
 
+  function handleError() {
+    setErrorPlaces(null);
+  }
+
   return (
     <>
+      <Modal open={errorPlaces} onClose={handleError}>
+        {errorPlaces && (
+          <Error
+            title="Error Occurred!!"
+            message={errorPlaces.message}
+            onConfirm={handleError}
+          />
+        )}
+      </Modal>
       <Modal open={modalIsOpen} onClose={handleStopRemovePlace}>
         <DeleteConfirmation
           onCancel={handleStopRemovePlace}
