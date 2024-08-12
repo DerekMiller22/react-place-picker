@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { fetchAvalPlaces } from "../http.js";
 
 import Places from "./Places.jsx";
 import Error from "./Error.jsx";
+import { fetchAvailablePlaces } from "../http.js";
 
 export default function AvailablePlaces({ onSelectPlace }) {
   const [isFetching, setIsFetching] = useState(false);
-  const [places, setPlaces] = useState([]);
+  const [availablePlaces, setAvailablePlaces] = useState([]);
   const [error, setError] = useState();
 
   useEffect(() => {
@@ -14,15 +14,17 @@ export default function AvailablePlaces({ onSelectPlace }) {
       setIsFetching(true);
 
       try {
-        setPlaces(fetchAvalPlaces());
+        const places = await fetchAvailablePlaces();
+
+        setAvailablePlaces(places);
+        setIsFetching(false);
       } catch (error) {
         setError({
           message:
             error.message || "Could not fetch places, please try again later.",
         });
+        setIsFetching(false);
       }
-
-      setIsFetching(false);
     }
 
     fetchPlaces();
@@ -35,7 +37,7 @@ export default function AvailablePlaces({ onSelectPlace }) {
   return (
     <Places
       title="Available Places"
-      places={places}
+      places={availablePlaces}
       isLoading={isFetching}
       loadingText="Fetching place data..."
       fallbackText="No places available."
